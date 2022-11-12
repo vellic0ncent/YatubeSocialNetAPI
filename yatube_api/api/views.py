@@ -1,11 +1,12 @@
 from rest_framework import viewsets, permissions, mixins, filters
 from django.shortcuts import get_object_or_404
 
-from posts.models import Post, Group, Follow, Comment
+from posts.models import Post, Group, Follow
 from rest_framework.pagination import LimitOffsetPagination
 
 from .permissions import AuthorOrReadOnly
-from .serializers import CommentSerializer, PostSerializer, GroupSerializer, FollowSerializer
+from .serializers import CommentSerializer, PostSerializer,\
+    GroupSerializer, FollowSerializer
 
 
 class ListCreateViewSet(
