@@ -28,13 +28,6 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'pub_date', 'author', 'group', 'image',)
         model = Post
 
-    def update(self, instance, validated_data):
-        instance.text = validated_data.get('text', instance.text)
-        instance.group = validated_data.get('group', instance.group)
-        instance.image = validated_data.get('image', instance.image)
-        instance.save()
-        return instance
-
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,9 +48,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
-        read_only=True,
         slug_field='username',
-        default=serializers.CurrentUserDefault()
+        default=serializers.CurrentUserDefault(),
+        queryset=User.objects.all(),
+        required=False
     )
     following = serializers.SlugRelatedField(
         queryset=User.objects.all(),
@@ -74,8 +68,8 @@ class FollowSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def validate(self, data):
-        if data['following'] == self.context['request'].user:
+    def validate(self, attrs):
+        if attrs['following'] == self.context['request'].user:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя.')
-        return data
+        return attrs
